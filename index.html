@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#111111" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="顏真卿原帖單字全螢幕習字工具" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>顏真卿原帖習字</title>
+</head>
+<body>
+  <main id="app" class="app-shell" aria-live="polite">
+    <header class="topbar">
+      <button id="charInfoBtn" class="meta-chip" type="button" aria-label="開啟目前字的詳細資料">
+        <span id="charId">YQL-0001</span>
+        <span class="dot">·</span>
+        <span id="positionText">1 / 4</span>
+      </button>
+      <div class="top-actions">
+        <button id="fullscreenBtn" class="icon-btn" type="button" aria-label="切換全螢幕">⛶</button>
+        <button id="menuBtn" class="icon-btn" type="button" aria-label="開啟功能選單">⋯</button>
+      </div>
+    </header>
+
+    <section id="viewer" class="viewer" aria-label="原帖單字">
+      <div id="cropStage" class="crop-stage">
+        <img id="sourceImage" alt="顏勤禮碑原帖單字" draggable="false" />
+        <div id="gridOverlay" class="grid-overlay hidden" aria-hidden="true"></div>
+        <div id="imageFallback" class="image-fallback hidden">
+          <div class="fallback-title">原帖圖尚未載入</div>
+          <div class="fallback-text">首次使用需要連網下載原帖圖；下載後可離線使用。</div>
+        </div>
+      </div>
+      <button id="reinforceBtn" class="reinforce-btn" type="button" aria-pressed="false">☆ 待加強</button>
+    </section>
+
+    <footer class="controls" aria-label="翻字與紀錄">
+      <button id="prevBtn" class="control-btn secondary" type="button">上一字</button>
+      <button id="doneBtn" class="control-btn primary" type="button">本次練完</button>
+      <button id="nextBtn" class="control-btn secondary" type="button">下一字</button>
+    </footer>
+  </main>
+
+  <dialog id="charDialog" class="panel-dialog">
+    <form method="dialog" class="dialog-card" id="charForm">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">目前原字</div>
+          <h2 id="dialogTitle">YQL-0001</h2>
+        </div>
+        <button class="close-btn" value="cancel" aria-label="關閉">×</button>
+      </div>
+      <div class="detail-grid">
+        <div><span>辨識字</span><strong id="detailChar">學</strong></div>
+        <div><span>來源</span><strong id="detailSource">顏勤禮碑</strong></div>
+        <div><span>累計練習</span><strong id="detailCount">0 次</strong></div>
+        <div><span>最後練習</span><strong id="detailLast">尚未練習</strong></div>
+      </div>
+      <label class="field-label" for="noteInput">個人備註</label>
+      <textarea id="noteInput" rows="4" placeholder="例如：右側太寬、橫畫角度要收斂"></textarea>
+      <div class="dialog-actions">
+        <button id="saveNoteBtn" class="btn ghost" value="noop" type="button">儲存備註</button>
+        <button class="btn" value="close">完成</button>
+      </div>
+      <p class="source-note" id="sourceNote"></p>
+    </form>
+  </dialog>
+
+  <dialog id="menuDialog" class="panel-dialog">
+    <div class="dialog-card menu-card">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">顏真卿原帖習字</div>
+          <h2>功能</h2>
+        </div>
+        <button id="menuCloseBtn" class="close-btn" type="button" aria-label="關閉">×</button>
+      </div>
+
+      <section class="menu-section">
+        <h3>跳到指定字</h3>
+        <div class="inline-row">
+          <input id="jumpInput" inputmode="text" autocomplete="off" placeholder="輸入 YQL-0004 或 君" />
+          <button id="jumpBtn" class="btn" type="button">前往</button>
+        </div>
+        <p id="jumpMessage" class="hint"></p>
+      </section>
+
+      <section class="menu-section">
+        <h3>顯示</h3>
+        <label class="setting-row">
+          <span>米字格</span>
+          <input id="gridToggle" type="checkbox" />
+        </label>
+        <label class="setting-row">
+          <span>黑白反相</span>
+          <input id="invertToggle" type="checkbox" />
+        </label>
+        <label class="setting-row">
+          <span>練字時保持螢幕亮起</span>
+          <input id="wakeToggle" type="checkbox" />
+        </label>
+      </section>
+
+      <section class="menu-section">
+        <div class="section-head">
+          <h3>最近練習紀錄</h3>
+          <span id="practiceTotal" class="badge">0 次</span>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <section class="menu-section">
+        <h3>手機備份</h3>
+        <p class="hint">備份包含目前位置、練習紀錄、待加強標記與備註。</p>
+        <div class="backup-actions">
+          <button id="exportBtn" class="btn ghost" type="button">匯出備份</button>
+          <label class="btn ghost file-btn">
+            匯入備份
+            <input id="importInput" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+        <p id="backupMessage" class="hint"></p>
+      </section>
+
+      <section class="menu-section source-section">
+        <h3>目前字庫</h3>
+        <p><strong>《顏勤禮碑》測試字庫 v0.1</strong></p>
+        <p class="hint">目前先用少量公共領域原帖影像驗證手機操作與紀錄。固定編號不會因日後擴充字庫而重新排列。</p>
+      </section>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="characters.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
