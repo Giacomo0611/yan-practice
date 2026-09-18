@@ -39,11 +39,28 @@
     const ch = current(); const source = sourceFor(ch); const crop = ch.crop;
     const stageW = els.cropStage.clientWidth; const stageH = els.cropStage.clientHeight;
     if (!stageW || !stageH) return;
-    const scale = Math.min(stageW / crop.w, stageH / crop.h);
-    const renderedW = source.width * scale; const renderedH = source.height * scale;
-    const cropW = crop.w * scale; const cropH = crop.h * scale;
-    const left = -crop.x * scale + (stageW - cropW) / 2;
-    const top = -crop.y * scale + (stageH - cropH) / 2;
+
+    // The catalog crop marks the character's core area.  For practice display we
+    // deliberately add breathing room around it so no stroke is clipped by the
+    // viewer edge.  Padding is clamped to the source image boundaries.
+    const padX = Math.max(12, crop.w * 0.20);
+    const padY = Math.max(12, crop.h * 0.20);
+    const x1 = Math.max(0, crop.x - padX);
+    const y1 = Math.max(0, crop.y - padY);
+    const x2 = Math.min(source.width, crop.x + crop.w + padX);
+    const y2 = Math.min(source.height, crop.y + crop.h + padY);
+    const viewW = Math.max(1, x2 - x1);
+    const viewH = Math.max(1, y2 - y1);
+
+    // Keep another 8% visual safety margin inside the square practice stage.
+    const scale = Math.min(stageW / viewW, stageH / viewH) * 0.92;
+    const renderedW = source.width * scale;
+    const renderedH = source.height * scale;
+    const shownW = viewW * scale;
+    const shownH = viewH * scale;
+    const left = -x1 * scale + (stageW - shownW) / 2;
+    const top = -y1 * scale + (stageH - shownH) / 2;
+
     Object.assign(els.sourceImage.style, {
       width: `${renderedW}px`, height: `${renderedH}px`, left: `${left}px`, top: `${top}px`
     });

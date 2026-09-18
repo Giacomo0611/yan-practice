@@ -1,4 +1,4 @@
-# 顏真卿原帖習字 PWA v0.1.0
+# 顏真卿原帖習字 PWA v0.1.1
 
 這是手機優先的第一版。目標是：一次顯示一個原帖單字、固定編號、上一字／下一字、記住位置、保存練習紀錄，並可安裝到 Android 手機主畫面。
 
@@ -54,3 +54,10 @@ python3 -m http.server 8080
 - 同一中文字在原帖出現多次時，分配不同永久 ID
 - 每筆必須保存：帖名、來源影像、crop 座標或本地字圖路徑、來源版本／授權
 - 若某字辨識尚未確認，可先留空 `char`，不得用推測結果冒充已確認字
+
+
+## v0.1.1 display fix
+- Character viewer changed to a square practice stage.
+- Added 20% crop safety padding plus 8% inner margin to prevent strokes from touching/crossing the viewer edge.
+- Existing fixed IDs and practice records remain compatible.
+- Demo library is still only 4 source-verified entries; this release fixes display, not library expansion.
